@@ -83,19 +83,34 @@ by itauto
 
 
 if __name__ == "__main__":
-    # Example graph: 3-cycle (edges: 0->1, 1->2, 2->0)
-    adj_matrix_cycle = [[0, 1, 0], [0, 0, 1], [1, 0, 0]]
-
-    adjacency_matrix = adj_matrix_cycle
+    # get input from user in the form 010, 110, etc.
+    adjacency_matrix = []
+    first_line = input('Please input graph like 010\\n001\\n100: \n')
+    n = len(first_line)
+    adjacency_matrix.append([int(x) for x in first_line])
+    for i in range(n - 1):
+        line = input()
+        adjacency_matrix.append([int(x) for x in line])
+        assert len(line) == n
+    print('Input successfully read. Generating IPC formula...')
+    
     premises = get_ipc_formula_premises(adjacency_matrix)
-    formula_cycle = get_ipc_formula(adj_matrix_cycle, premises)
-    lean_file_cycle = get_lean_file(formula_cycle, len(adj_matrix_cycle))
+    formula_cycle = get_ipc_formula(adjacency_matrix, premises)
+    lean_file_cycle = get_lean_file(formula_cycle, n)
 
     with open("HamiltonToItauto/Formula.lean", "w+") as f:
         f.write(lean_file_cycle)
 
+    print("Solving the IPC formula using Lean's ITauto tactic...")
     # Run lake build
-    completed = subprocess.run(["lake", "build"], check=True, capture_output=True)
+    try:
+        completed = subprocess.run(["lake", "build"], check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        if 'build failed' in e.stderr.decode("utf-8"):
+            print('No Hamilton cycle!')
+        exit(1)
+    
+    print('Hamilton cycle found!')
 
     # Get info lines in stdout
     stdout = completed.stdout.decode("utf-8")
@@ -130,6 +145,6 @@ if __name__ == "__main__":
     assert all(v == 'v' for v in vs)
     vertices = [int(variable.split('_')[1]) for variable in variables_used]
     steps = [int(variable.split('_')[2]) for variable in variables_used]
-    assert sorted(vertices) == list(range(1, len(adj_matrix_cycle) + 1))
+    assert sorted(vertices) == list(range(1, len(adjacency_matrix) + 1))
 
     print(vertices)
