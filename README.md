@@ -5,7 +5,7 @@ if and only if the input graph has a Hamilton cycle. Then using Lean's `itauto` 
 or Rocq's `tauto` to find the proof of being a tautology. The proof encodes a Hamilton cycle,
 i.e. you can extract the Hamilton cycle by parsing the proof appropriately.
 
-Source of algo: https://www.mimuw.edu.pl/~urzy/Litt/zelit4tg2.pdf
+Source of algo: https://www.mimuw.edu.pl/~urzy/Litt/zelit4tg2.pdf ([mirror](http://web.archive.org/web/20251030193816/https://www.mimuw.edu.pl/~urzy/Litt/zelit4tg2.pdf))
 
 Goals for now:
 - strengthen the reduction of Hamilton to BCK logic
